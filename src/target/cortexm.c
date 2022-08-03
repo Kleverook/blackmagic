@@ -413,6 +413,7 @@ bool cortexm_probe(ADIv5_AP_t *ap)
 		PROBE(gd32f1_probe);
 		break;
 	case AP_DESIGNER_STM:
+		PROBE(stm32f3_probe);
 		PROBE(stm32f1_probe);
 		PROBE(stm32f4_probe);
 		PROBE(stm32h7_probe);
@@ -460,7 +461,7 @@ bool cortexm_probe(ADIv5_AP_t *ap)
 			PROBE(lpc11xx_probe); /* LPC8 */
 		} else if (ap->ap_partno == 0x4c3)  { /* Cortex-M3 ROM */
 			PROBE(ch32f1_probe);
-			PROBE(stm32f1_probe); /* Care for other STM32F1 clones (?) */
+//			PROBE(stm32f1_probe); /* Care for other STM32F1 clones (?) */
 			PROBE(lpc15xx_probe); /* Thanks to JojoS for testing */
 		} else if (ap->ap_partno == 0x471)  { /* Cortex-M0 ROM */
 			PROBE(lpc11xx_probe); /* LPC24C11 */
@@ -474,6 +475,9 @@ bool cortexm_probe(ADIv5_AP_t *ap)
 			probe for the LPC546xx first, which experimentally doesn't harm
 			LPC43xx detection. */
 			PROBE(lpc546xx_probe);
+
+//			PROBE(at32f40x_probe);
+			PROBE(at32f43x_probe);
 
 			PROBE(lpc43xx_probe);
 			PROBE(kinetis_probe); /* Older K-series */

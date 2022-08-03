@@ -153,6 +153,29 @@ bool gd32f1_probe(target *t)
 /**
     \brief identify the stm32f1 chip
 */
+bool stm32f3_probe(target *t)
+{
+	uint16_t stored_idcode = t->idcode;
+	if ((t->cpuid & CPUID_PARTNO_MASK) == CORTEX_M0)
+		t->idcode = target_mem_read32(t, DBGMCU_IDCODE_F0) & 0xfff;
+	else
+		t->idcode = target_mem_read32(t, DBGMCU_IDCODE) & 0xfff;
+
+	switch(t->idcode) {
+
+	case 0x438:  /* STM32F303x6/8 and STM32F328 */
+		t->driver = "STM32F334";
+		target_add_ram(t, 0x20000000, 0x10000);
+		stm32f1_add_flash(t, 0x8000000, 0x10000, 0x800);
+		target_add_commands(t, stm32f1_cmd_list, "STM32F334");
+		return true;
+	default:     /* NONE */
+		t->idcode = stored_idcode;
+		return false;
+	}
+
+}
+
 
 bool stm32f1_probe(target *t)
 {
@@ -360,6 +383,7 @@ static int stm32f1_flash_write(struct target_flash *f,
 			return -1;
 		}
 	}
+//	target_reset(t);
 	return 0;
 }
 

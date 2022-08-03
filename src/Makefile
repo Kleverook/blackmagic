@@ -60,6 +60,7 @@ SRC =			\
 	stm32l0.c	\
 	stm32l4.c	\
 	stm32g0.c	\
+	at32f43x.c	\
 	target.c	\
 
 

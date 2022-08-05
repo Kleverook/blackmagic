@@ -3,8 +3,8 @@ MFLAGS += --no-print-dir
 Q := @
 endif
 
-PC_HOSTED =
-NO_LIBOPENCM3 =
+PC_HOSTED = true
+NO_LIBOPENCM3 = true
 ifeq ($(PROBE_HOST), hosted)
 	PC_HOSTED = true
 	NO_LIBOPENCM3 = true

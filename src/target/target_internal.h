@@ -199,7 +199,7 @@ bool efm32_probe(target *t);
 bool msp432_probe(target *t);
 bool ke04_probe(target *t);
 bool rp_probe(target *t);
-//bool at32f40x_probe(target *t);
+bool at32f40x_probe(target *t);
 bool at32f43x_probe(target *t);
-
+bool tm4c_probe(target *t);
 #endif

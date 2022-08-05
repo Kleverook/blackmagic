@@ -1,4 +1,4 @@
-PROBE_HOST ?= native
+PROBE_HOST ?= stlink
 PLATFORM_DIR = platforms/$(PROBE_HOST)
 VPATH += $(PLATFORM_DIR) target
 ENABLE_DEBUG ?=
@@ -8,7 +8,7 @@ MAKEFLAGS += --no-print-dir
 Q := @
 endif
 
-CFLAGS += -Wall -Wextra -Werror -Wno-char-subscripts \
+CFLAGS += -Wall -Wextra -Wno-char-subscripts \
 	-std=gnu99 -g3 -MD -I./target \
 	-I. -Iinclude -I$(PLATFORM_DIR)
 
@@ -61,6 +61,8 @@ SRC =			\
 	stm32l4.c	\
 	stm32g0.c	\
 	at32f43x.c	\
+	at32f40x.c	\
+	tm4c.c		\
 	target.c	\
 
 
@@ -71,7 +73,7 @@ ifneq ($(PC_HOSTED),1)
 LDFLAGS += -Wl,--print-memory-usage
 endif
 
-OPT_FLAGS ?= -Os
+OPT_FLAGS ?= -O0
 CFLAGS += $(OPT_FLAGS)
 LDFLAGS += $(OPT_FLAGS)
 

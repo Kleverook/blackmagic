@@ -106,7 +106,7 @@ struct at32f43x_priv_s {
 	uint32_t dbgmcu_cr;
 };
 
-enum IDS_STM32F247 {
+enum IDS_AT32F43 {
 
 	ID_AT32F437 = 0x54f
 };

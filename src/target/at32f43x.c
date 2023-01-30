@@ -293,62 +293,57 @@ static bool at32f43x_option_erase(target_s *t) {
 	/* Erase option bytes instruction */
 
 	const char spinner[] = "|/-\\";
-		int spinindex = 0;
+	int spinindex = 0;
 
-		tc_printf(t, "Erasing flash... This may take a few seconds.  ");
-		target_mem_write32(t, AT_FLASH_USD_UNLOCK, AT_KEY1);
-		target_mem_write32(t, AT_FLASH_USD_UNLOCK, AT_KEY2);
-		at32f43x_AT_FLASH_UNLOCK(t);
+	tc_printf(t, "Erasing flash... This may take a few seconds.  ");
+	target_mem_write32(t, AT_FLASH_USD_UNLOCK, AT_KEY1);
+	target_mem_write32(t, AT_FLASH_USD_UNLOCK, AT_KEY2);
+	at32f43x_AT_FLASH_UNLOCK(t);
 
-		/* Flash mass erase start instruction */
-		target_mem_write32(t, AT_FLASH_CTRL,
-				(AT_FLASH_CTRL_USDERS | AT_FLASH_CTRL_ERSTR));
+	/* Flash mass erase start instruction */
+	target_mem_write32(t, AT_FLASH_CTRL,
+			(AT_FLASH_CTRL_USDERS | AT_FLASH_CTRL_ERSTR));
 
-
-		while (target_mem_read32(t, AT_FLASH_STS) & AT_FLASH_STS_OBF) {
-			tc_printf(t, "\b%c", spinner[spinindex++ % 4]);
-			if (target_check_error(t)) {
-				tc_printf(t, "\n");
-				return false;
-			}
+	while (target_mem_read32(t, AT_FLASH_STS) & AT_FLASH_STS_OBF) {
+		tc_printf(t, "\b%c", spinner[spinindex++ % 4]);
+		if (target_check_error(t)) {
+			tc_printf(t, "\n");
+			return false;
 		}
-		tc_printf(t, "\n");
-		/* Check for error */
-		const uint32_t result = target_mem_read32(t, AT_FLASH_USD);
-		tc_printf(t, "result: %x\n", result);
-		at32f43x_option_write(t);
+	}
+	tc_printf(t, "\n");
+	/* Check for error */
+	const uint32_t result = target_mem_read32(t, AT_FLASH_USD);
+	tc_printf(t, "result: %x\n", result);
+	at32f43x_option_write(t);
 
 //		const uint32_t result = target_mem_read32(t, AT_FLASH_STS);
-		return !(result & AT_SR_ERROR_MASK);
-
+	return !(result & AT_SR_ERROR_MASK);
 
 	return true;
 }
 
-
-
 static bool at32f43x_option_write(target_s *t) {
 
 	const char spinner[] = "|/-\\";
-		int spinindex = 0;
-			/* Flash mass erase start instruction */
-			target_mem_write32(t, AT_FLASH_CTRL, AT_FLASH_CTRL_USDPRGM);
-			target_mem_write16(t, AT_FLASH_FAP, FAP_RELIEVE_KEY);
+	int spinindex = 0;
+	/* Flash mass erase start instruction */
+	target_mem_write32(t, AT_FLASH_CTRL, AT_FLASH_CTRL_USDPRGM);
+	target_mem_write16(t, AT_FLASH_FAP, FAP_RELIEVE_KEY);
 
-			while (target_mem_read32(t, AT_FLASH_STS) & AT_FLASH_STS_OBF) {
-				tc_printf(t, "\b%c", spinner[spinindex++ % 4]);
-				if (target_check_error(t)) {
-					tc_printf(t, "\n");
-					return false;
-				}
-			}
+	while (target_mem_read32(t, AT_FLASH_STS) & AT_FLASH_STS_OBF) {
+		tc_printf(t, "\b%c", spinner[spinindex++ % 4]);
+		if (target_check_error(t)) {
+			tc_printf(t, "\n");
+			return false;
+		}
+	}
 
-			const uint32_t result = target_mem_read32(t, AT_FLASH_USD);
+	const uint32_t result = target_mem_read32(t, AT_FLASH_USD);
 
-			tc_printf(t, "result: %x\n", result);
-			return true;
+	tc_printf(t, "result: %x\n", result);
+	return true;
 }
-
 
 static bool at32f43x_cmd_option(target_s *t, int argc, const char **argv) {
 
@@ -368,9 +363,8 @@ static bool at32f43x_cmd_option(target_s *t, int argc, const char **argv) {
 		return true;
 
 	} else if (CTRL) {
-			tc_printf(t,
-					"ce\n");
-			return true;
+		tc_printf(t, "ce\n");
+		return true;
 	} else
 		tc_printf(t,
 				"usage: monitor option erase\nusage: monitor option <addr> <value>\n");

@@ -37,13 +37,11 @@ uint16_t nrst_pin;
 static uint32_t rev;
 static void adc_init(void);
 
-int platform_hwversion(void)
-{
+int platform_hwversion(void) {
 	return rev;
 }
 
-void platform_init(void)
-{
+void platform_init(void) {
 	rev = detect_rev();
 	SCS_DEMCR |= SCS_DEMCR_VC_MON_EN;
 	rcc_clock_setup_pll(&rcc_hse_configs[RCC_CLOCK_HSE8_72MHZ]);
@@ -60,17 +58,21 @@ void platform_init(void)
 	}
 #endif
 	/* Setup GPIO ports */
-	gpio_set_mode(TMS_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_INPUT_FLOAT, TMS_PIN);
-	gpio_set_mode(TCK_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, TCK_PIN);
-	gpio_set_mode(TDI_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, TDI_PIN);
+	gpio_set_mode(TMS_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_INPUT_FLOAT,
+			TMS_PIN);
+	gpio_set_mode(TCK_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+			TCK_PIN);
+	gpio_set_mode(TDI_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+			TDI_PIN);
 
 	platform_nrst_set_val(false);
 
-	gpio_set_mode(LED_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, led_idle_run);
+	gpio_set_mode(LED_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL,
+			led_idle_run);
 
 	/* Relocate interrupt vector table here */
 	extern uint32_t vector_table;
-	SCB_VTOR = (uintptr_t)&vector_table;
+	SCB_VTOR = (uintptr_t) & vector_table;
 
 	platform_timing_init();
 	if (rev > 1U) /* Reconnect USB */
@@ -87,24 +89,27 @@ void platform_init(void)
 	adc_init();
 }
 
-void platform_nrst_set_val(bool assert)
-{
+void platform_nrst_set_val(bool assert) {
 	if (assert) {
-		gpio_set_mode(NRST_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, nrst_pin);
+		gpio_set_mode(NRST_PORT, GPIO_MODE_OUTPUT_2_MHZ,
+				GPIO_CNF_OUTPUT_OPENDRAIN, nrst_pin);
+
+		for (volatile size_t i = 0; i < 100000U; ++i) //Задержка
+			continue;
+
 		gpio_clear(NRST_PORT, nrst_pin);
 	} else {
-		gpio_set_mode(NRST_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN, nrst_pin);
+		gpio_set_mode(NRST_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
+				nrst_pin);
 		gpio_set(NRST_PORT, nrst_pin);
 	}
 }
 
-bool platform_nrst_get_val()
-{
+bool platform_nrst_get_val() {
 	return gpio_get(NRST_PORT, nrst_pin) == 0;
 }
 
-static void adc_init(void)
-{
+static void adc_init(void) {
 	rcc_periph_clock_enable(RCC_ADC1);
 
 	gpio_set_mode(GPIOA, GPIO_MODE_INPUT, GPIO_CNF_INPUT_ANALOG, GPIO0);
@@ -126,11 +131,10 @@ static void adc_init(void)
 	adc_calibrate(ADC1);
 }
 
-const char *platform_target_voltage(void)
-{
+const char* platform_target_voltage(void) {
 	static char ret[6] = "0.00V";
 	const uint8_t channel = 0;
-	adc_set_regular_sequence(ADC1, 1, (uint8_t *)&channel);
+	adc_set_regular_sequence(ADC1, 1, (uint8_t*) &channel);
 	adc_start_conversion_direct(ADC1);
 	/* Wait for end of conversion. */
 	while (!adc_eoc(ADC1))
@@ -138,7 +142,7 @@ const char *platform_target_voltage(void)
 	uint32_t platform_adc_value = adc_read_regular(ADC1);
 
 	const uint8_t ref_channel = 17;
-	adc_set_regular_sequence(ADC1, 1, (uint8_t *)&ref_channel);
+	adc_set_regular_sequence(ADC1, 1, (uint8_t*) &ref_channel);
 	adc_start_conversion_direct(ADC1);
 	/* Wait for end of conversion. */
 	while (!adc_eoc(ADC1))
@@ -154,7 +158,6 @@ const char *platform_target_voltage(void)
 	return ret;
 }
 
-void platform_target_clk_output_enable(bool enable)
-{
-	(void)enable;
+void platform_target_clk_output_enable(bool enable) {
+	(void) enable;
 }

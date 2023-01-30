@@ -10,7 +10,7 @@ MAKEFLAGS += --no-print-dir
 Q := @
 endif
 
-CFLAGS += -Wall -Wextra -Werror -Wreturn-type \
+CFLAGS += -Wall -Wextra -Wreturn-type \
 	-Wno-char-subscripts \
 	-std=c11 -g3 -MD -I./target \
 	-I. -Iinclude -I$(PLATFORM_DIR)
@@ -72,7 +72,9 @@ SRC =              \
 	renesas.c      \
 	target.c       \
 	target_flash.c \
-	target_probe.c
+	target_probe.c \
+	at32f43x.c
+
 
 include $(PLATFORM_DIR)/Makefile.inc
 

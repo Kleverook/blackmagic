@@ -125,7 +125,7 @@ struct at32f40x_priv_s {
 
 enum IDS_STM32F247 {
 
-	ID_AT32F403 = 0x347, ID_AT32F437 = 0x54f
+    ID_AT32F403 = 0x347, ID_AT32F403ARGT7 = 0x345
 };
 
 static void at32f40x_add_flash(target *t, uint32_t addr, size_t length,
@@ -154,13 +154,13 @@ static void at32f40x_add_flash(target *t, uint32_t addr, size_t length,
 
 static char* at32f40x_get_chip_name(uint32_t idcode) {
 	switch (idcode) {
-	case ID_AT32F403: /* F40XxE/G */
-		return "AT32F403";
-	case ID_AT32F437: /* F42XxG/I */
-		return "AT32F437";
-	default:
-		return NULL;
-	}
+        case ID_AT32F403: /* F40XxE/G */
+            return "AT32F403";
+        case ID_AT32F403ARGT7: /* F40XxE/G */
+            return "AT32F403ARGT7";
+        default:
+            return NULL;
+    }
 }
 
 static void at32f40x_detach(target *t) {
@@ -176,26 +176,27 @@ bool at32f40x_probe(target *t) {
 
 	switch (t->idcode) {
 
-	case ID_AT32F403: /* F413     RM0430 Rev.2, 320 kB Ram, 1.5 MB flash. */
+        case ID_AT32F403: /* F413     RM0430 Rev.2, 320 kB Ram, 1.5 MB flash. */
 //		t->mass_erase = at32f40x_mass_erase;
-		t->detach = at32f40x_detach;
-		t->driver = at32f40x_get_chip_name(t->idcode);
-		t->attach = at32f40x_attach;
-		target_add_commands(t, at32f40x_cmd_list, t->driver);
+            t->detach = at32f40x_detach;
+            t->driver = at32f40x_get_chip_name(t->idcode);
+            t->attach = at32f40x_attach;
+            target_add_commands(t, at32f40x_cmd_list, t->driver);
 
-		return true;
+            return true;
 
-	case ID_AT32F437: /* F413     RM0430 Rev.2, 320 kB Ram, 1.5 MB flash. */
+        case ID_AT32F403ARGT7: /* F413     RM0430 Rev.2, 320 kB Ram, 1.5 MB flash. */
 //		t->mass_erase = at32f40x_mass_erase;
-		t->detach = at32f40x_detach;
-		t->driver = at32f40x_get_chip_name(t->idcode);
-		t->attach = at32f40x_attach;
-		target_add_commands(t, at32f40x_cmd_list, t->driver);
+            t->detach = at32f40x_detach;
+            t->driver = at32f40x_get_chip_name(t->idcode);
+            t->attach = at32f40x_attach;
+            target_add_commands(t, at32f40x_cmd_list, t->driver);
 
-		return true;
-	default:
-		return false;
-	}
+            return true;
+
+        default:
+            return false;
+    }
 }
 
 static bool at32f40x_attach(target *t) {
@@ -207,15 +208,16 @@ static bool at32f40x_attach(target *t) {
 
 	switch (t->idcode) {
 
-	case ID_AT32F403: /* F74x RM0385 Rev.4 */
-		max_flashsize = 1024;
-		break;
-	case ID_AT32F437: /* F76x F77x RM0410 */
-		max_flashsize = 4032;
-		break;
-	default:
-		return false;
-	}
+        case ID_AT32F403: /* F74x RM0385 Rev.4 */
+            max_flashsize = 1024;
+            break;
+        case ID_AT32F403ARGT7: /* F74x RM0385 Rev.4 */
+            max_flashsize = 1024;
+            break;
+
+        default:
+            return false;
+    }
 
 	/* Save DBGMCU_CR to restore it when detaching*/
 	struct at32f40x_priv_s *priv_storage = calloc(1, sizeof(*priv_storage));
@@ -234,7 +236,7 @@ static bool at32f40x_attach(target *t) {
 
 	target_mem_map_free(t);
 
-	target_add_ram(t, 0x20000000, 0x80000); /* 320 k RAM */
+
 
 	int split = 0;
 	uint32_t banksize;
@@ -245,15 +247,19 @@ static bool at32f40x_attach(target *t) {
 
 	switch (t->idcode) {
 
-	case ID_AT32F403: /* F74x RM0385 Rev.4 */
-		at32f40x_add_flash(t, 0x8000000, banksize, 0x800, 0, split);
-		break;
-	case ID_AT32F437: /* F76x F77x RM0410 */
-		at32f40x_add_flash(t, 0x8000000, banksize, 0x10000, 0, split);
-		break;
-	default:
-		break;
-	}
+        case ID_AT32F403: /* F74x RM0385 Rev.4 */
+            target_add_ram(t, 0x20000000, 0x80000); /* 512 k RAM */
+            at32f40x_add_flash(t, 0x8000000, banksize, 0x800, 0, split);
+            break;
+        case ID_AT32F403ARGT7:
+            target_add_ram(t, 0x20000000, 0x18000); /* 96 k RAM */
+            at32f40x_add_flash(t, 0x8000000, banksize, 0x800, 0, split);
+
+            break;
+
+        default:
+            break;
+    }
 
 	return (true);
 }
@@ -279,21 +285,22 @@ static int at32f40x_flash_erase(struct target_flash *f, target_addr addr,
 		/* Flash page erase instruction */
 		switch (t->idcode) {
 
-		case ID_AT32F403: /* F74x RM0385 Rev.4 */
-			target_mem_write32(t, FLASH_ADDR, sector);
-			/* write address to FMA */
-			target_mem_write32(t, FLASH_CTRL,
-					(FLASH_CTRL_SECERS | FLASH_CTRL_ERSTR));
-			break;
-		case ID_AT32F437: /* F76x F77x RM0410 */
-			target_mem_write32(t, FLASH_ADDR, sector);
-			/* write address to FMA */
-			target_mem_write32(t, FLASH_CTRL,
-					(FLASH_CTRL_BLKERS | FLASH_CTRL_ERSTR));
-			break;
-		default:
-			break;
-		}
+            case ID_AT32F403: /* F74x RM0385 Rev.4 */
+                target_mem_write32(t, FLASH_ADDR, sector);
+                /* write address to FMA */
+                target_mem_write32(t, FLASH_CTRL,
+                                   (FLASH_CTRL_SECERS | FLASH_CTRL_ERSTR));
+                break;
+            case ID_AT32F403ARGT7: /* F74x RM0385 Rev.4 */
+                target_mem_write32(t, FLASH_ADDR, sector);
+                /* write address to FMA */
+                target_mem_write32(t, FLASH_CTRL,
+                                   (FLASH_CTRL_SECERS | FLASH_CTRL_ERSTR));
+                break;
+
+            default:
+                break;
+        }
 
 		/* Read FLASH_STS to poll for BSY bit */
 		while (target_mem_read32(t, FLASH_STS) & FLASH_STS_OBF)
@@ -307,15 +314,16 @@ static int at32f40x_flash_erase(struct target_flash *f, target_addr addr,
 			len = 0;
 		switch (t->idcode) {
 
-		case ID_AT32F403: /* F74x RM0385 Rev.4 */
-			sector += 0x800;
-			break;
-		case ID_AT32F437: /* F76x F77x RM0410 */
-			sector += 0x10000;
-			break;
-		default:
-			break;
-		}
+            case ID_AT32F403: /* F74x RM0385 Rev.4 */
+                sector += 0x800;
+                break;
+            case ID_AT32F403ARGT7: /* F74x RM0385 Rev.4 */
+                sector += 0x800;
+                break;
+
+            default:
+                break;
+        }
 
 	}
 

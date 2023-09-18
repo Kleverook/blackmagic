@@ -4,12 +4,14 @@
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">
       <MakefileProjectSettings>
+        <option name="buildTarget" value="src" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
+            <option value="D:\Black_artery\blackmagic" />
           </set>
         </option>
+        <option name="switches" value="mingw32-make" />
         <option name="version" value="2" />
       </MakefileProjectSettings>
     </option>

@@ -52,7 +52,6 @@ main(int argc, char **argv)
 			morse("TARGET LOST.", 1);
 		}
 	}
-
 	/* Should never get here */
 	return 0;
 }

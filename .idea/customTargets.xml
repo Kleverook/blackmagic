@@ -2,7 +2,17 @@
 <project version="4">
   <component name="CLionExternalBuildManager">
     <target id="fa0c5e9b-3008-474b-85fe-a0f9d2fff60a" name="Unnamed" defaultType="MAKE">
-      <configuration id="afdc924e-96df-44f2-ac0f-6d7e64edc713" name="Unnamed" />
+      <configuration id="afdc924e-96df-44f2-ac0f-6d7e64edc713" name="Unnamed" toolchainName="MinGW" />
+    </target>
+    <target id="171835f4-2806-4b29-93bf-6450c09b3c48" name="MSys2" defaultType="TOOL">
+      <configuration id="5725edaa-6c0b-4ded-a4b9-9719b27455a7" name="MSys2">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_make" />
+        </build>
+        <clean type="TOOL">
+          <tool actionId="Tool_External Tools_clean" />
+        </clean>
+      </configuration>
     </target>
   </component>
 </project>
